@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this dataset or package, please cite it as below."
-title: "bihgrid: the Bosnia and Herzegovina transmission grid as a graph learning dataset"
+title: "bihgrid: the transmission grid of Bosnia and Herzegovina as a graph learning dataset"
 type: dataset
 authors:
   - family-names: Dziho
