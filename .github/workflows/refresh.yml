@@ -1,0 +1,46 @@
+name: weekly-data-refresh
+on:
+  schedule:
+    - cron: "17 3 * * 1"   # every Monday 03:17 UTC
+  workflow_dispatch: {}     # manual "Run workflow" button
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Collect latest ENTSO-E data (incremental)
+        env:
+          ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}
+        run: python src/collect.py
+      - name: Rebuild graph dataset
+        run: python src/join_graph.py
+      - name: Rebuild report
+        run: python src/build_report.py
+      - name: Commit refreshed data and report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p docs/bs
+          cp report/index.html docs/index.html
+          cp report/bs/index.html docs/bs/index.html
+          git add data report docs dataset
+          if git diff --cached --quiet; then
+            echo "No changes this week."
+          else
+            git commit -m "chore: weekly data refresh $(date -u +%Y-%m-%d)"
+            git push
+          fi
+      - name: Trigger website rebuild
+        if: success()
+        run: |
+          if [ -n "${{ secrets.NETLIFY_BUILD_HOOK }}" ]; then
+            curl -s -X POST "${{ secrets.NETLIFY_BUILD_HOOK }}" > /dev/null
+          fi

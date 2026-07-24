@@ -1,0 +1,7 @@
+entsoe-py>=0.8,<0.9
+pandas>=2.1
+pyarrow>=14
+matplotlib>=3.8
+numpy>=1.26
+networkx>=3.0
+requests>=2.31

@@ -1,0 +1,35 @@
+{
+  "title": "bihgrid: the Bosnia and Herzegovina transmission grid as a graph learning dataset",
+  "upload_type": "dataset",
+  "description": "Real ≥220 kV transmission topology of Bosnia and Herzegovina (40 BA buses + 11 border buses, 62 lines with electrical parameters, from the PyPSA-Eur OSM prebuilt network) joined with 11+ years of hourly ENTSO-E zone-level time series (load, generation per production type, forecasts, cross-border physical flows and scheduled exchanges with HR/RS/ME), plus a curated plant-to-bus mapping and generation weight vectors. Ships as CSV/Parquet/GraphML and as the PyTorch Geometric package <code>bihgrid</code> (PyPI). All design decisions, heuristics and limitations are documented in dataset/DESIGN.md and DATASET_CARD.md. Time series © ENTSO-E Transparency Platform (reported by NOSBiH), reuse subject to ENTSO-E terms; topology derived from OpenStreetMap via PyPSA-Eur (ODbL); code MIT.",
+  "creators": [
+    {
+      "name": "Dziho, Faruk",
+      "affiliation": "University of Texas at San Antonio"
+    }
+  ],
+  "access_right": "open",
+  "license": "other-open",
+  "keywords": [
+    "power grid",
+    "transmission network",
+    "graph neural networks",
+    "pytorch geometric",
+    "ENTSO-E",
+    "Bosnia and Herzegovina",
+    "benchmark dataset",
+    "energy"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/FarukDziho/bih-power-data",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.14144752",
+      "relation": "isDerivedFrom",
+      "scheme": "doi"
+    }
+  ]
+}

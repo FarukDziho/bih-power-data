@@ -1,0 +1,89 @@
+{
+ "zone_series": {
+  "rows": 101326,
+  "start_utc": "2014-12-31 23:00:00+00:00",
+  "end_utc": "2026-07-23 20:00:00+00:00",
+  "columns": [
+   "load_actual_mw",
+   "load_forecast_mw",
+   "generation_forecast_mw",
+   "gen_fossil_brown_coal_lignite_mw",
+   "gen_fossil_hard_coal_mw",
+   "gen_hydro_water_reservoir_mw",
+   "gen_wind_onshore_mw",
+   "gen_hydro_pumped_storage_mw",
+   "gen_hydro_run_of_river_and_poundage_mw",
+   "gen_other_renewable_mw",
+   "gen_solar_mw",
+   "net_import_HR_mw",
+   "sched_net_import_HR_mw",
+   "net_import_RS_mw",
+   "sched_net_import_RS_mw",
+   "net_import_ME_mw",
+   "sched_net_import_ME_mw",
+   "net_position_mw"
+  ],
+  "generation_outliers_set_nan": {
+   "Fossil Brown coal/Lignite": 26,
+   "Fossil Hard coal": 7,
+   "Hydro Water Reservoir": 1,
+   "Wind Onshore": 0,
+   "Hydro Pumped Storage": 0,
+   "Hydro Run-of-river and poundage": 1,
+   "Solar": 37
+  },
+  "outlier_rule": "value > 3.0 x installed capacity of type",
+  "load_zero_hours_set_nan": 1229,
+  "load_spikes_set_nan": {
+   "count": 2,
+   "threshold_mw": 4291.2
+  }
+ },
+ "graph": {
+  "nodes": 51,
+  "edges_multigraph": 67,
+  "note": "MultiGraph keeps parallel circuits as separate edges (nx.Graph would collapse them); `circuits` kept as edge attr",
+  "connected": true,
+  "ba_subgraph_connected": true
+ },
+ "generation_mapping_coverage": {
+  "Fossil Brown coal/Lignite": {
+   "mapped_mw": 2065.0,
+   "entsoe_installed_mw": 1883.0,
+   "mapped_fraction": 1.097
+  },
+  "Hydro Pumped Storage": {
+   "mapped_mw": 420.0,
+   "entsoe_installed_mw": 440.0,
+   "mapped_fraction": 0.955
+  },
+  "Hydro Run-of-river and poundage": {
+   "mapped_mw": 148.8,
+   "entsoe_installed_mw": 252.0,
+   "mapped_fraction": 0.59
+  },
+  "Hydro Water Reservoir": {
+   "mapped_mw": 1402.0,
+   "entsoe_installed_mw": 1456.0,
+   "mapped_fraction": 0.963
+  },
+  "Wind Onshore": {
+   "mapped_mw": 218.6,
+   "entsoe_installed_mw": 308.0,
+   "mapped_fraction": 0.71
+  },
+  "Fossil Hard coal": {
+   "mapped_mw": 0.0,
+   "entsoe_installed_mw": null,
+   "mapped_fraction": null,
+   "note": "same 5 coal plants as Lignite under older ENTSO-E classification; sum both fossil columns and use the 'Fossil coal (combined)' weights"
+  },
+  "Solar": {
+   "mapped_mw": 0.0,
+   "entsoe_installed_mw": 244.0,
+   "mapped_fraction": 0.0,
+   "note": "distributed small-scale; deliberately unmapped"
+  }
+ },
+ "load_disaggregation": "none (zone-level only) \u2014 see DESIGN.md"
+}

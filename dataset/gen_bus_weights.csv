@@ -1,0 +1,26 @@
+bus_id,entsoe_type,weight
+way/841600752-220,Fossil Brown coal/Lignite,0.34624697336561744
+BA7-220,Fossil Brown coal/Lignite,0.2179176755447942
+BA2-400,Fossil Brown coal/Lignite,0.14527845036319612
+BA24-400,Fossil Brown coal/Lignite,0.14527845036319612
+way/222962996-400,Fossil Brown coal/Lignite,0.14527845036319612
+BA25-220,Hydro Pumped Storage,1.0
+BA23-220,Hydro Run-of-river and poundage,0.4032258064516129
+way/251735977-220,Hydro Run-of-river and poundage,0.26075268817204295
+BA20-220,Hydro Run-of-river and poundage,0.2150537634408602
+BA3-220,Hydro Run-of-river and poundage,0.06720430107526881
+way/245190169-220,Hydro Run-of-river and poundage,0.05376344086021505
+BA15-400,Hydro Water Reservoir,0.22467902995720399
+BA21-220,Hydro Water Reservoir,0.20114122681883023
+BA18-220,Hydro Water Reservoir,0.12838801711840228
+way/245190169-220,Hydro Water Reservoir,0.12838801711840228
+way/251735977-220,Hydro Water Reservoir,0.12125534950071326
+BA16-220,Hydro Water Reservoir,0.11483594864479316
+BA19-220,Hydro Water Reservoir,0.08131241084165478
+BA20-220,Wind Onshore,0.7804208600182982
+BA22-220,Wind Onshore,0.21957913998170175
+BA2-400,Fossil coal (combined),0.14527845036319612
+BA24-400,Fossil coal (combined),0.14527845036319612
+BA7-220,Fossil coal (combined),0.2179176755447942
+way/222962996-400,Fossil coal (combined),0.14527845036319612
+way/841600752-220,Fossil coal (combined),0.34624697336561744

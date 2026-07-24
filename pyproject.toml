@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bihgrid"
+version = "0.1.2"
+description = "The Bosnia and Herzegovina power grid as a PyTorch Geometric dataset: real >=220kV topology + ENTSO-E hourly time series (2015-present)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Faruk Dziho", email = "faruk.dziho@gmail.com" }]
+keywords = ["power-grid", "graph-neural-networks", "pytorch-geometric",
+            "dataset", "energy", "ENTSO-E", "Bosnia and Herzegovina"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "requests",
+    "torch>=2.0",
+    "torch_geometric>=2.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/FarukDziho/bih-power-data"
+Repository = "https://github.com/FarukDziho/bih-power-data"
+Documentation = "https://github.com/FarukDziho/bih-power-data#readme"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bihgrid"]
+
+[tool.hatch.build.targets.sdist]
+include = ["bihgrid", "README.md", "pyproject.toml"]

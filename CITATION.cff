@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this dataset or package, please cite it as below."
+title: "bihgrid: the Bosnia and Herzegovina transmission grid as a graph learning dataset"
+type: dataset
+authors:
+  - family-names: Dziho
+    given-names: Faruk
+    email: faruk.dziho@gmail.com
+repository-code: "https://github.com/FarukDziho/bih-power-data"
+url: "https://github.com/FarukDziho/bih-power-data"
+license: MIT
+keywords:
+  - power grid
+  - graph neural networks
+  - pytorch geometric
+  - ENTSO-E
+  - Bosnia and Herzegovina
+  - benchmark dataset
+abstract: >-
+  Real >=220 kV transmission topology of Bosnia and Herzegovina (from
+  PyPSA-Eur/OSM) joined with 11+ years of hourly ENTSO-E zone-level time
+  series (load, generation per type, cross-border flows), packaged as a
+  PyTorch Geometric dataset. Data licenses: ENTSO-E Transparency Platform
+  terms (time series), ODbL (topology, via OpenStreetMap/PyPSA-Eur).

@@ -1,0 +1,19 @@
+{
+ "source": "zenodo.org/records/14144752 (PyPSA-Eur OSM prebuilt network)",
+ "buses_ba": 40,
+ "buses_border": 11,
+ "lines": 62,
+ "lines_cross_border": 12,
+ "transformers": 5,
+ "converters": 0,
+ "dc_links": 0,
+ "voltage_levels_kv": [
+  220.0,
+  400.0
+ ],
+ "total_line_km": 2854761.0,
+ "graph": {
+  "nodes": 51,
+  "edges": 59
+ }
+}

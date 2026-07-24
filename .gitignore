@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+
+# python packaging / tests
+dist/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+
+# local scratch
+_to_delete/
+worknotes.md
+.Rhistory

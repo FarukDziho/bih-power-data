@@ -1,0 +1,64 @@
+# Publish pipeline: push a tag `vX.Y.Z` and this workflow
+#   1. runs the package tests,
+#   2. zips the dataset and creates a GitHub Release with it attached
+#      (which Zenodo archives automatically once the repo is linked there),
+#   3. builds the wheel/sdist and publishes to PyPI via trusted publishing.
+#
+# One-time setup required (see PUBLISHING.md):
+#   - pypi.org: add this repo as a Trusted Publisher for project `bihgrid`
+#     (workflow file name: release.yml, environment: pypi)
+#   - zenodo.org: flip this repo ON under GitHub integration
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install torch_geometric pandas pyarrow numpy requests pytest
+      - run: python -m pytest tests/ -q
+
+  github-release:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip dataset
+        run: |
+          zip -r bihgrid-dataset.zip \
+            dataset/ \
+            topology/out/ topology/plants.csv topology/ba_bus_places.csv \
+            DATASET_CARD.md CITATION.cff
+      - name: Create GitHub release with dataset asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" bihgrid-dataset.zip \
+            --title "bihgrid ${GITHUB_REF_NAME}" \
+            --notes "Dataset + package release. See DATASET_CARD.md and dataset/DESIGN.md for contents, licenses and limitations."
+
+  pypi:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # PyPI trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install build && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
