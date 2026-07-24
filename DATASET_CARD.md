@@ -61,10 +61,13 @@ non-synthetic alternative to IEEE test cases for GNN research on power grids.
 
 ## Citation
 
-Until the data paper is out, cite the Zenodo DOI (see repo badge) or:
+Until the data paper is out, please cite:
 
 > Dziho, F. (2026). bihgrid: the transmission grid of Bosnia and Herzegovina as
-> a graph learning dataset. https://github.com/FarukDziho/bih-power-data
+> a graph learning dataset. Zenodo. https://doi.org/10.5281/zenodo.21536096
+
+The DOI above covers all versions and resolves to the latest; version-specific
+DOIs are on the [Zenodo record](https://doi.org/10.5281/zenodo.21536096).
 
 ## Maintenance
 

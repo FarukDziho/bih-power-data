@@ -1,5 +1,8 @@
 # bih-power-data
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21536096.svg)](https://doi.org/10.5281/zenodo.21536096)
+[![PyPI](https://img.shields.io/pypi/v/bihgrid)](https://pypi.org/project/bihgrid/)
+
 Continuously refreshed dataset and monthly report for the **Bosnia and Herzegovina power system**
 (BA control area, operated by [NOSBiH](https://www.nosbih.ba/en/)), collected from the
 [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/).

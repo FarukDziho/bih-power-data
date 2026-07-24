@@ -6,6 +6,10 @@ authors:
   - family-names: Dziho
     given-names: Faruk
     email: faruk.dziho@gmail.com
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21536096
+    description: "Concept DOI (all versions; resolves to latest)"
 repository-code: "https://github.com/FarukDziho/bih-power-data"
 url: "https://github.com/FarukDziho/bih-power-data"
 license: MIT
