@@ -1,4 +1,4 @@
-"""bihgrid — the Bosnia and Herzegovina transmission grid as a PyG dataset.
+"""bihgrid — the transmission grid of Bosnia and Herzegovina as a PyG dataset.
 
 Real ≥220 kV grid topology (PyPSA-Eur / OSM) joined with ENTSO-E hourly
 zone-level time series (2015→present), packaged as a
@@ -14,5 +14,5 @@ the design decisions behind every heuristic (dataset/DESIGN.md).
 """
 from .dataset import BiHGrid
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __all__ = ["BiHGrid", "__version__"]

@@ -45,7 +45,7 @@ _PLANT_COLS = {
 
 
 class BiHGrid(InMemoryDataset):
-    """The Bosnia and Herzegovina ≥220 kV transmission grid.
+    """The ≥220 kV transmission grid of Bosnia and Herzegovina.
 
     One static graph (51 buses, 67 per-circuit edges incl. transformers)
     plus hourly ENTSO-E zone-level series (UTC) and a curated
