@@ -1,8 +1,8 @@
 {
  "zone_series": {
-  "rows": 101326,
+  "rows": 101408,
   "start_utc": "2014-12-31 23:00:00+00:00",
-  "end_utc": "2026-07-23 20:00:00+00:00",
+  "end_utc": "2026-07-27 06:00:00+00:00",
   "columns": [
    "load_actual_mw",
    "load_forecast_mw",
@@ -36,7 +36,7 @@
   "load_zero_hours_set_nan": 1229,
   "load_spikes_set_nan": {
    "count": 2,
-   "threshold_mw": 4291.2
+   "threshold_mw": 4290.8
   }
  },
  "graph": {
