@@ -9,7 +9,7 @@ tags:
   - ENTSO-E
 authors:
   - name: Faruk Dziho
-    orcid: 0000-0000-0000-0000
+    orcid: 0009-0007-9117-9315
     affiliation: 1
 affiliations:
   - name: University of Texas at San Antonio, San Antonio, TX, United States

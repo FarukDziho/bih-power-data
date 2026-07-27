@@ -6,6 +6,7 @@ authors:
   - family-names: Dziho
     given-names: Faruk
     email: faruk.dziho@gmail.com
+    orcid: "https://orcid.org/0009-0007-9117-9315"
 identifiers:
   - type: doi
     value: 10.5281/zenodo.21536096
