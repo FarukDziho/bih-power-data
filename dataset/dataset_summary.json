@@ -1,8 +1,8 @@
 {
  "zone_series": {
-  "rows": 102078,
+  "rows": 102418,
   "start_utc": "2014-12-31 23:00:00+00:00",
-  "end_utc": "2026-08-24 04:00:00+00:00",
+  "end_utc": "2026-09-07 08:00:00+00:00",
   "columns": [
    "load_actual_mw",
    "load_forecast_mw",
@@ -15,6 +15,7 @@
    "gen_hydro_run_of_river_and_poundage_mw",
    "gen_other_renewable_mw",
    "gen_solar_mw",
+   "gen_hydro_run_of_river_and_pondage_mw",
    "net_import_HR_mw",
    "sched_net_import_HR_mw",
    "net_import_RS_mw",
@@ -30,13 +31,14 @@
    "Wind Onshore": 0,
    "Hydro Pumped Storage": 0,
    "Hydro Run-of-river and poundage": 1,
-   "Solar": 37
+   "Solar": 37,
+   "Hydro Run-of-river and pondage": 0
   },
   "outlier_rule": "value > 3.0 x installed capacity of type",
   "load_zero_hours_set_nan": 1229,
   "load_spikes_set_nan": {
    "count": 2,
-   "threshold_mw": 4290.4
+   "threshold_mw": 4290.2
   }
  },
  "graph": {
