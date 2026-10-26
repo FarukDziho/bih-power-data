@@ -1,8 +1,8 @@
 {
  "zone_series": {
-  "rows": 103426,
+  "rows": 103594,
   "start_utc": "2014-12-31 23:00:00+00:00",
-  "end_utc": "2026-10-19 08:00:00+00:00",
+  "end_utc": "2026-10-26 08:00:00+00:00",
   "columns": [
    "load_actual_mw",
    "load_forecast_mw",
@@ -35,10 +35,10 @@
    "Hydro Run-of-river and pondage": 0
   },
   "outlier_rule": "value > 3.0 x installed capacity of type",
-  "load_zero_hours_set_nan": 1229,
+  "load_zero_hours_set_nan": 1230,
   "load_spikes_set_nan": {
    "count": 2,
-   "threshold_mw": 4288.1
+   "threshold_mw": 4287.9
   }
  },
  "graph": {
