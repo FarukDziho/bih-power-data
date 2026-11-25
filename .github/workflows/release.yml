@@ -39,7 +39,7 @@ jobs:
         run: |
           zip -r bihgrid-dataset.zip \
             dataset/ \
-            topology/out/ topology/plants.csv topology/ba_bus_places.csv \
+            topology/out/ topology/plants.csv topology/PLANTS_SOURCES.md topology/ba_bus_places.csv \
             DATASET_CARD.md CITATION.cff
       - name: Create GitHub release with dataset asset
         env:
