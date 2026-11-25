@@ -87,5 +87,38 @@
    "note": "distributed small-scale; deliberately unmapped"
   }
  },
+ "generation_mapping_basis": {
+  "Fossil Brown coal/Lignite": {
+   "direct_mw": 1765.0,
+   "proxy_mw": 300.0,
+   "direct_fraction": 0.855
+  },
+  "Hydro Pumped Storage": {
+   "direct_mw": 420.0,
+   "proxy_mw": 0.0,
+   "direct_fraction": 1.0
+  },
+  "Hydro Run-of-river and poundage": {
+   "direct_mw": 0.0,
+   "proxy_mw": 148.8,
+   "direct_fraction": 0.0
+  },
+  "Hydro Water Reservoir": {
+   "direct_mw": 980.0,
+   "proxy_mw": 422.0,
+   "direct_fraction": 0.699
+  },
+  "Wind Onshore": {
+   "direct_mw": 0.0,
+   "proxy_mw": 218.6,
+   "direct_fraction": 0.0
+  }
+ },
+ "generation_weights_by_year": {
+  "file": "gen_bus_weights_by_year.csv",
+  "rule": "plant counted from its commissioning year (plants.csv)",
+  "first_year": 2015,
+  "last_year": 2026
+ },
  "load_disaggregation": "none (zone-level only) \u2014 see DESIGN.md"
 }

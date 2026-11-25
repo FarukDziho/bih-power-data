@@ -17,6 +17,11 @@ Design decisions (documented in dataset/DESIGN.md, generated here):
 3. Parallel circuits are PRESERVED: edges.csv has one row per line record
    (62 lines + transformers), and ba_graph_multi.graphml is a MultiGraph.
    The `circuits` attribute is kept as an edge feature.
+   Plants are counted only from their commissioning year
+   (plants.csv `commissioned`): gen_bus_weights_by_year.csv holds one
+   weight vector per type and calendar year, so a plant receives no share
+   of zone generation for years before it existed. gen_bus_weights.csv
+   keeps the static vector for the current fleet.
 4. Obvious sensor errors in generation_per_type (values > OUTLIER_FACTOR x
    installed capacity of that type) are set to NaN and counted, never
    silently dropped.
@@ -152,6 +157,8 @@ def build_nodes_and_weights() -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     weights = pd.concat([weights, cw[["bus_id", "entsoe_type", "weight"]]],
                         ignore_index=True)
 
+    weights_by_year = build_weights_by_year(plants)
+
     # mapped-capacity coverage vs latest ENTSO-E installed capacity
     cap = pd.read_parquet(DATA / "installed_capacity.parquet")
     latest = cap.ffill().iloc[-1]
@@ -174,7 +181,44 @@ def build_nodes_and_weights() -> tuple[pd.DataFrame, pd.DataFrame, dict]:
                          "entsoe_installed_mw": round(float(latest.get("Solar", np.nan)), 1),
                          "mapped_fraction": 0.0,
                          "note": "distributed small-scale; deliberately unmapped"}
-    return nodes, weights, coverage
+    # how much mapped capacity sits on its own >=220 kV bus ("direct") and how
+    # much is assigned to the nearest >=220 kV bus as a stand-in ("proxy")
+    basis = {}
+    if "mapping_basis" in plants.columns:
+        for t, g in plants.groupby("entsoe_type"):
+            direct = float(g.loc[g["mapping_basis"] == "direct", "capacity_mw"].sum())
+            total = float(g["capacity_mw"].sum())
+            basis[t] = {"direct_mw": round(direct, 1),
+                        "proxy_mw": round(total - direct, 1),
+                        "direct_fraction": round(direct / total, 3)}
+    return nodes, weights, coverage, weights_by_year, basis
+
+
+def build_weights_by_year(plants: pd.DataFrame,
+                          first_year: int = 2015) -> pd.DataFrame:
+    """Per-type bus weights for each calendar year, counting only plants in
+    service that year (plants.csv `commissioned` <= year).
+
+    Columns: year, bus_id, entsoe_type, weight. Weights of a type sum to 1
+    in every year in which at least one mapped plant of that type exists;
+    a type with no plant in service that year has no rows. Year resolution
+    is deliberate: commissioning months are not known for every plant.
+    """
+    last_year = pd.Timestamp.now(tz="UTC").year
+    rows = []
+    for year in range(first_year, last_year + 1):
+        live = plants[plants["commissioned"] <= year]
+        groups = [(t, g) for t, g in live.groupby("entsoe_type")]
+        coal = live[live["entsoe_type"].str.startswith("Fossil")]
+        if len(coal):
+            groups.append(("Fossil coal (combined)", coal))
+        for t, g in groups:
+            w = g.groupby("bus_id")["capacity_mw"].sum()
+            w = w / w.sum()
+            for bus, wt in w.sort_values(ascending=False).items():
+                rows.append({"year": year, "bus_id": bus,
+                             "entsoe_type": t, "weight": wt})
+    return pd.DataFrame(rows)
 
 
 def build_edges_and_graph(nodes: pd.DataFrame):
@@ -217,7 +261,7 @@ def main():
     import networkx as nx
 
     zone, notes = load_zone_series()
-    nodes, weights, coverage = build_nodes_and_weights()
+    nodes, weights, coverage, weights_by_year, basis = build_nodes_and_weights()
     edges, G = build_edges_and_graph(nodes)
 
     zone.to_parquet(OUT / "zone_series.parquet")
@@ -226,6 +270,7 @@ def main():
          .to_csv(OUT / "nodes.csv", index=False)
     edges.to_csv(OUT / "edges.csv", index=False)
     weights.to_csv(OUT / "gen_bus_weights.csv", index=False)
+    weights_by_year.to_csv(OUT / "gen_bus_weights_by_year.csv", index=False)
     nx.write_graphml(G, OUT / "ba_graph_multi.graphml")
 
     ba = G.subgraph(n for n, d in G.nodes(data=True) if d.get("role") == "ba")
@@ -246,6 +291,13 @@ def main():
             "ba_subgraph_connected": bool(nx.is_connected(ba)),
         },
         "generation_mapping_coverage": coverage,
+        "generation_mapping_basis": basis,
+        "generation_weights_by_year": {
+            "file": "gen_bus_weights_by_year.csv",
+            "rule": "plant counted from its commissioning year (plants.csv)",
+            "first_year": int(weights_by_year["year"].min()),
+            "last_year": int(weights_by_year["year"].max()),
+        },
         "load_disaggregation": "none (zone-level only) — see DESIGN.md",
     }
     (OUT / "dataset_summary.json").write_text(json.dumps(summary, indent=1))

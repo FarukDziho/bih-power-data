@@ -18,6 +18,10 @@ RAW_FILES = [
     "dataset_summary.json",
 ]
 
+# Shipped from the release after v0.1.3; older revisions do not have it, so
+# it is fetched when present and the loader falls back to the static weights.
+OPTIONAL_RAW_FILES = ["gen_bus_weights_by_year.csv"]
+
 # static node features, in x column order
 NODE_FEATURES = [
     "voltage_kv",
@@ -104,6 +108,11 @@ class BiHGrid(InMemoryDataset):
                             break
                         (raw_dir / name).write_bytes(z.read(member))
                     else:
+                        for name in OPTIONAL_RAW_FILES:
+                            member = next((m for m in z.namelist()
+                                           if m.endswith("dataset/" + name)), None)
+                            if member is not None:
+                                (raw_dir / name).write_bytes(z.read(member))
                         return
         base = (f"https://raw.githubusercontent.com/{REPO}/"
                 f"{self.revision}/dataset/")
@@ -111,6 +120,10 @@ class BiHGrid(InMemoryDataset):
             r = requests.get(base + name, timeout=300)
             r.raise_for_status()
             (raw_dir / name).write_bytes(r.content)
+        for name in OPTIONAL_RAW_FILES:
+            r = requests.get(base + name, timeout=300)
+            if r.ok:
+                (raw_dir / name).write_bytes(r.content)
 
     # ------------------------------------------------------------------ process
     def process(self):
@@ -156,16 +169,35 @@ class BiHGrid(InMemoryDataset):
         for _, r in weights.iterrows():
             W[idx[r["bus_id"]], types.index(r["entsoe_type"])] = r["weight"]
 
+        # ---- per-year weights [Y, N, n_types]: plants counted from their
+        #      commissioning year (absent in releases up to v0.1.3)
+        yearly_path = raw / "gen_bus_weights_by_year.csv"
+        weight_years, W_year = [], None
+        if yearly_path.exists():
+            wy = pd.read_csv(yearly_path, dtype={"bus_id": str})
+            weight_years = sorted(int(y) for y in wy["year"].unique())
+            W_year = np.zeros((len(weight_years), len(bus_ids), len(types)),
+                              dtype=np.float32)
+            for _, r in wy.iterrows():
+                W_year[weight_years.index(int(r["year"])), idx[r["bus_id"]],
+                       types.index(r["entsoe_type"])] = r["weight"]
+
         # ---- zone-level hourly series [T, F] (NaN kept as NaN)
         zone = zone.sort_index()
         zone_t = torch.tensor(zone.to_numpy(dtype=np.float32))
+        # seconds since the epoch, whatever resolution the index is stored in
+        # (pandas >= 3 reads Parquet timestamps as microseconds, not ns)
+        epoch = pd.Timestamp("1970-01-01", tz="UTC")
         time_unix = torch.tensor(
-            zone.index.view("int64") // 10**9, dtype=torch.long)
+            ((zone.index - epoch) // pd.Timedelta(seconds=1)).to_numpy(),
+            dtype=torch.long)
 
         data = Data(x=x, edge_index=edge_index, edge_attr=edge_attr, pos=pos,
                     gen_weights=torch.tensor(W),
                     zone_series=zone_t, time_unix=time_unix)
         data.num_nodes = len(bus_ids)
+        if W_year is not None:
+            data.gen_weights_by_year = torch.tensor(W_year)
         if self.pre_transform is not None:
             data = self.pre_transform(data)
         self.save([data], self.processed_paths[0])
@@ -177,6 +209,7 @@ class BiHGrid(InMemoryDataset):
             "node_features": NODE_FEATURES,
             "edge_features": EDGE_FEATURES,
             "gen_weight_types": types,
+            "gen_weight_years": weight_years,
             "zone_columns": zone.columns.tolist(),
             "revision": self.revision,
             "summary": summary,
@@ -203,20 +236,35 @@ class BiHGrid(InMemoryDataset):
         return pd.DataFrame(d.zone_series.numpy(), index=index,
                             columns=self.zone_columns)
 
-    def node_generation(self, gen_type: str = "Fossil coal (combined)"
-                        ) -> torch.Tensor:
+    def node_generation(self, gen_type: str = "Fossil coal (combined)",
+                        by_commissioning: bool = True) -> torch.Tensor:
         """Heuristic per-bus generation series ``[T, N]`` for one type.
 
         This is zone generation spread over buses by installed-capacity
         share of *mapped* plants — a documented heuristic, not metering.
         For ``"Fossil coal (combined)"`` the two ENTSO-E fossil columns are
         summed first (their classification drifts across years).
+
+        With ``by_commissioning=True`` (default) each hour uses the weights
+        of its calendar year, so a plant gets no share of zone generation
+        before its commissioning year (``topology/plants.csv``). Releases up
+        to v0.1.3 do not ship per-year weights; for those, or with
+        ``by_commissioning=False``, the static weights of the current fleet
+        are applied to every hour.
         """
         d = self[0]
         types = self._meta["gen_weight_types"]
         if gen_type not in types:
             raise ValueError(f"unknown type {gen_type!r}; choose from {types}")
-        w = d.gen_weights[:, types.index(gen_type)]  # [N]
+        years = self._meta.get("gen_weight_years") or []
+        if by_commissioning and years and "gen_weights_by_year" in d:
+            hour_year = pd.to_datetime(d.time_unix.numpy(), unit="s",
+                                       utc=True).year.to_numpy()
+            pos = np.clip(hour_year - years[0], 0, len(years) - 1)
+            w = d.gen_weights_by_year[torch.as_tensor(pos), :,
+                                      types.index(gen_type)]  # [T, N]
+        else:
+            w = d.gen_weights[:, types.index(gen_type)].unsqueeze(0)  # [1, N]
         cols = self.zone_columns
         if gen_type == "Fossil coal (combined)":
             sel = [cols.index("gen_fossil_brown_coal_lignite_mw"),
@@ -226,4 +274,4 @@ class BiHGrid(InMemoryDataset):
             name = ("gen_" + gen_type.lower().replace(" ", "_")
                     .replace("/", "_").replace("-", "_") + "_mw")
             zone = d.zone_series[:, cols.index(name)]
-        return zone.unsqueeze(1) * w.unsqueeze(0)
+        return zone.unsqueeze(1) * w
