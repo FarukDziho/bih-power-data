@@ -48,6 +48,11 @@ Caveats, deliberately explicit:
   (Mesihovina, then Jelovača), Podveležje (Mostar bus) enters in 2021, and
   Ivovik in 2024. Stanari (2016) predates the first coal hour (2017-02), and
   Bočac 2 (2018) predates the first run-of-river hour (2021).
+- **Run-of-river rename.** From 14 August 2026 the source delivers this type
+  as "Hydro Run-of-river and pondage" where it used to be "... poundage".
+  `join_graph.py` folds both into the original column name, so the series is
+  continuous and the weights apply to all of it. Release v0.1.5 predates this
+  fix and carries the newer hours in a separate 19th column.
 - **Coal classification drift:** ENTSO-E BA moves the same five coal plants
   between "Fossil Brown coal/Lignite" and "Fossil Hard coal" across years
   (hard-coal installed capacity stops being reported entirely). For analysis,

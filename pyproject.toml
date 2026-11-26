@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bihgrid"
-version = "0.1.5"
+version = "0.1.6"
 description = "The power grid of Bosnia and Herzegovina as a PyTorch Geometric dataset: real >=220 kV topology and ENTSO-E hourly time series, 2015-present"
 readme = "README.md"
 requires-python = ">=3.10"

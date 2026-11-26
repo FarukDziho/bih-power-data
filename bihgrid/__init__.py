@@ -14,5 +14,5 @@ the design decisions behind every heuristic (dataset/DESIGN.md).
 """
 from .dataset import BiHGrid
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 __all__ = ["BiHGrid", "__version__"]

@@ -50,6 +50,29 @@ ZONE_FILES = {
 BORDERS = ["HR", "RS", "ME"]
 
 
+# Production-type names that changed at the source. From 14 August 2026 the
+# collector receives "Hydro Run-of-river and pondage" where it used to
+# receive "... poundage". Both are the same ENTSO-E type (B11); without this
+# the series splits into two columns and the weights lose the newer one.
+TYPE_ALIASES = {
+    "Hydro Run-of-river and pondage": "Hydro Run-of-river and poundage",
+}
+
+
+def merge_type_aliases(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+    """Fold renamed production-type columns into their original name."""
+    df = df.copy()
+    merged = {}
+    for alias, canon in TYPE_ALIASES.items():
+        if alias not in df.columns:
+            continue
+        merged[alias] = int(df[alias].notna().sum())
+        df[canon] = (df[canon].combine_first(df[alias])
+                     if canon in df.columns else df[alias])
+        df = df.drop(columns=[alias])
+    return df, merged
+
+
 def to_utc(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df.index = pd.DatetimeIndex(df.index).tz_convert("UTC")
@@ -68,6 +91,11 @@ def load_zone_series() -> tuple[pd.DataFrame, dict]:
     # generation per type, with outlier cleaning against installed capacity
     gen = to_utc(pd.read_parquet(DATA / "generation_per_type.parquet"))
     cap = to_utc(pd.read_parquet(DATA / "installed_capacity.parquet"))
+    gen, merged = merge_type_aliases(gen)
+    cap, _ = merge_type_aliases(cap)
+    notes["production_type_renames_merged"] = {
+        f"{alias} -> {TYPE_ALIASES[alias]}": {"hours": n}
+        for alias, n in merged.items()}
     cleaned = {}
     for c in gen.columns:
         s = gen[c].astype(float)
@@ -160,7 +188,7 @@ def build_nodes_and_weights() -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     weights_by_year = build_weights_by_year(plants)
 
     # mapped-capacity coverage vs latest ENTSO-E installed capacity
-    cap = pd.read_parquet(DATA / "installed_capacity.parquet")
+    cap, _ = merge_type_aliases(pd.read_parquet(DATA / "installed_capacity.parquet"))
     latest = cap.ffill().iloc[-1]
     coverage = {}
     for t, mapped in w.sum().items():

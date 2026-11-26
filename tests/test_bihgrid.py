@@ -135,3 +135,12 @@ def test_static_fallback_without_yearly_weights(ds_static):
     b = ds_static.node_generation("Wind Onshore", by_commissioning=False)
     assert a.shape == (d.zone_series.shape[0], 51)
     assert torch.equal(torch.nan_to_num(a), torch.nan_to_num(b))
+
+
+def test_renamed_production_types_are_merged(ds):
+    # ENTSO-E run-of-river arrives as "... pondage" from 2026-08-14 (it was
+    # "... poundage"); join_graph.py folds both into one column
+    cols = ds.zone_columns
+    assert not any("pondage" in c for c in cols)
+    ror = ds.zone_dataframe()["gen_hydro_run_of_river_and_poundage_mw"]
+    assert ror.iloc[-1000:].notna().sum() > 900
